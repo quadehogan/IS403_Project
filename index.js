@@ -15,6 +15,8 @@ app.set('view engine', 'ejs');
 // PORT on deploy 3000 on test
 const port = process.env.PORT || 3000;
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Session middleware
 app.use(
     session(
