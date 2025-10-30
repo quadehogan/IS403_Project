@@ -1,0 +1,213 @@
+/* ===== Color Variables ===== */
+:root {
+  --primary-color: #2c3e50;      /* Deep blue-gray */
+  --accent-color: #3498db;       /* Soft blue */
+  --background-color: #f5f6fa;   /* Light gray */
+  --text-color: #2d3436;         /* Neutral dark text */
+  --border-color: #dcdde1;       /* Subtle border color */
+  --button-hover: #2980b9;       /* Darker blue */
+}
+
+/* ===== General Styles ===== */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* ===== Login Container ===== */
+.login-container {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 350px;
+  text-align: center;
+}
+
+.title {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+/* ===== Form ===== */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+label {
+  text-align: left;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+input {
+  padding: 0.7rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 4px var(--accent-color);
+}
+
+/* ===== Button ===== */
+button {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--button-hover);
+}
+
+/* ===== Signup Text ===== */
+.signup-text {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.signup-text a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+.signup-text a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Navbar ===== */
+.navbar {
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.logo span {
+  color: var(--accent-color);
+}
+
+.navbar nav a {
+  color: white;
+  margin-left: 1.5rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.navbar nav a:hover {
+  color: var(--accent-color);
+}
+
+.btn-nav {
+  background-color: var(--accent-color);
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+}
+
+.btn-nav:hover {
+  background-color: var(--button-hover);
+}
+
+/* ===== Hero Section ===== */
+.hero {
+  background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+  color: white;
+  text-align: center;
+  padding: 6rem 2rem;
+}
+
+.hero-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.hero h2 {
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.hero-btn {
+  background-color: white;
+  color: var(--primary-color);
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.hero-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* ===== Features Section ===== */
+.features {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 3rem 1rem;
+  background-color: var(--background-color);
+  gap: 2rem;
+}
+
+.feature {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  width: 300px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+}
+
+.feature h3 {
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+/* ===== Footer ===== */
+footer {
+  text-align: center;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
