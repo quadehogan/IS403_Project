@@ -1,0 +1,26 @@
+<%- include('layout', {
+  title: 'Home',
+  body: `
+  <div class="text-center my-5">
+    <h1>Welcome to BizConnect</h1>
+    <p class="lead">Discover and review local businesses in your community.</p>
+    <a href="/signup" class="btn btn-primary btn-lg">Join Now</a>
+  </div>
+
+  <div class="row mt-5 text-center">
+    <h2>Explore Categories</h2>
+    <div class="col-md-4 mt-4">
+      <img src="/images/restaurant.jpg" class="img-fluid rounded mb-3" alt="Restaurants">
+      <h5>Restaurants</h5>
+    </div>
+    <div class="col-md-4 mt-4">
+      <img src="/images/salon.jpg" class="img-fluid rounded mb-3" alt="Salons">
+      <h5>Salons</h5>
+    </div>
+    <div class="col-md-4 mt-4">
+      <img src="/images/repair.jpg" class="img-fluid rounded mb-3" alt="Repairs">
+      <h5>Repairs</h5>
+    </div>
+  </div>
+  `
+}) %>
