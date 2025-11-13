@@ -15,18 +15,29 @@ app.set('view engine', 'ejs');
 // PORT on deploy 3000 on test
 const port = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Session middleware
 app.use(
     session(
         {
-            secret: process.env.SESSION_SECRET || 'fallback_secret',
-            resave: false,
-            saveUninitialized: false,
+    secret: process.env.SESSION_SECRET || 'fallback-secret-key',
+    resave: false,
+    saveUninitialized: false,
         }
-    )           
+    )
 );
+
+const knex = require("knex")({
+    client: "pg",
+    connection: {
+        host : process.env.DB_HOST || "localhost",
+        user : process.env.DB_USER || "postgres",
+        password : process.env.DB_PASSWORD || "admin",
+    database : process.env.DB_NAME || "foodisus", // NEED TO CHANGE WHEN DB IS CREATED
+        port : process.env.DB_PORT || 5432  // CONFIM PORT WHEN MADE
+    }
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -49,20 +60,6 @@ app.use((req, res, next) => {
 
 });
 
-app.post('/login', (req, res) => {
-    let sName = req.body.username;
-    let sPassword = req.body.password;
-
-    if (sName === process.env.USERNAME && sPassword === process.env.PASSWORD) {
-        req.session.isLoggedIn = true;
-        req.session.username = sName;
-        res.redirect('/');
-    }
-    else {
-        res.render('login', { errorMessage: 'Invalid username or password' });
-    }
-});
-
 app.get('/', (req, res) => {
     if (req.session.isLoggedIn) {
         res.render('index', { username: req.session.username });
@@ -71,8 +68,54 @@ app.get('/', (req, res) => {
     }
 });
 
-app.get('/test', (req, res) => {
-    res.render('test');
+// This creates attributes in the session object to keep track of user and if they logged in
+app.post("/login", (req, res) => {
+    let sName = req.body.username;
+    let sPassword = req.body.password;
+
+    knex.select("username", "password")
+        .from('users')
+        .where("username", sName)
+        .andWhere("password", sPassword)
+        .then(users => {
+            // Check if a user was found with matching username AND password
+            if (users.length > 0) {
+                req.session.isLoggedIn = true;
+                req.session.username = sName;
+                res.redirect("/");
+            } else {
+                // No matching user found
+                res.render("login", { error_message: "Invalid login" });
+            }
+        })
+        .catch(err => {
+            console.error("Login error:", err);
+            res.render("login", { error_message: "Invalid login" });
+        });
+
+});
+
+// Logout route
+app.get("/logout", (req, res) => {
+    // Get rid of the session object
+    req.session.destroy((err) => {
+        if (err) {
+            console.log(err);
+        }
+        res.redirect("/");
+    });
+});
+
+app.get('/signup', (req, res) => {
+    res.render('signup', { title: 'Sign Up' });
+});
+
+app.get('/businesses', (req, res) => {
+    res.render('businesses', { title: 'Businesses' });
+});
+
+app.get('/services', (req, res) => {
+    res.send('<h2>Services Page Coming Soon</h2>');
 });
 
 app.listen(port, () => {
