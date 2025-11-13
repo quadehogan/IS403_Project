@@ -110,6 +110,33 @@ app.get('/signup', (req, res) => {
     res.render('signup', { title: 'Sign Up' });
 });
 
+app.post('/signupsumbit', (req, res) => {
+    //find username and password
+    const { username, password } = req.body;
+
+    // Simple validation
+    if (!username || !password) {
+        return res.status(400).render("addUser", { error_message: "Username and password are required." });
+    }
+
+    // create user 
+    const newUser = {
+        username,
+        password
+    };
+
+    // insert into db
+    knex('users')
+        .insert(newUser)
+        .then(() => {
+            res.redirect('/signup');
+        })
+        .catch(err => {
+            console.error("Error creating user:", err);
+            res.status(500).render("addUser", { error_message: "An error occurred while creating the user." });
+        });
+});
+
 app.get('/businesses', (req, res) => {
     res.render('businesses', { title: 'Businesses' });
 });
