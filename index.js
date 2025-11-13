@@ -25,16 +25,16 @@ app.use(
     )
 );
 
-const knex = require("knex")({
-    client: "pg",
-    connection: {
-        host : process.env.DB_HOST || "localhost",
-        user : process.env.DB_USER || "postgres",
-        password : process.env.DB_PASSWORD || "admin",
-    database : process.env.DB_NAME || "foodisus", // NEED TO CHANGE WHEN DB IS CREATED
-        port : process.env.DB_PORT || 5432  // CONFIM PORT WHEN MADE
-    }
-});
+// const knex = require("knex")({
+//     client: "pg",
+//     connection: {
+//         host : process.env.DB_HOST || "localhost",
+//         user : process.env.DB_USER || "postgres",
+//         password : process.env.DB_PASSWORD || "admin",
+//     database : process.env.DB_NAME || "foodisus", // NEED TO CHANGE WHEN DB IS CREATED
+//         port : process.env.DB_PORT || 5432  // CONFIM PORT WHEN MADE
+//     }
+// });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
