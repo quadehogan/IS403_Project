@@ -112,17 +112,18 @@ app.get('/signup', (req, res) => {
 
 app.post('/signupsumbit', (req, res) => {
     //find username and password
-    const { username, password } = req.body;
+    const { username, password, email} = req.body;
 
     // Simple validation
-    if (!username || !password) {
-        return res.status(400).render("addUser", { error_message: "Username and password are required." });
+    if (!username || !password || !email) {
+        return res.status(400).render("addUser", { error_message: "Username, email, and password are required." });
     }
 
     // create user 
     const newUser = {
         username,
-        password
+        password,
+        email
     };
 
     // insert into db
@@ -133,7 +134,37 @@ app.post('/signupsumbit', (req, res) => {
         })
         .catch(err => {
             console.error("Error creating user:", err);
-            res.status(500).render("addUser", { error_message: "An error occurred while creating the user." });
+            res.status(500).render("signupUser", { error_message: "An error occurred while creating the user." });
+        });
+});
+
+app.post('/bussignupsumbit', (req, res) => {
+    //find username and password
+    // Make Category a dropdown later so we can limit options 
+    const { password, business_email, business_name, category} = req.body;
+
+    // Simple validation
+    if (!business_name || !password || !business_email) {
+        return res.status(400).render("signupBusiness", { error_message: "Business name, email, and password are required." });
+    }
+
+    // create business
+    const newBusiness = {
+        business_name,
+        password,
+        business_email,
+        category
+    };
+
+    // insert into db
+    knex('businesses')
+        .insert(newBusiness)
+        .then(() => {
+            res.redirect('/signup');
+        })
+        .catch(err => {
+            console.error("Error creating business:", err);
+            res.status(500).render("signupBusiness", { error_message: "An error occurred while creating the business." });
         });
 });
 
