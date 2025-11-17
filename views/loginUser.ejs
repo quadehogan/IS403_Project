@@ -1,0 +1,25 @@
+<%
+  const errHtml = errorMessage
+    ? `<div class="alert alert-danger">${errorMessage}</div>`
+    : '';
+
+  const body = `
+    <div class="col-md-6 mx-auto">
+      <h2 class="text-center mb-4">User Login</h2>
+      ${errHtml}
+      <form action="/login-user" method="POST">
+        <div class="mb-3">
+          <label>Email or Username</label>
+          <input type="text" class="form-control" name="identifier" required>
+        </div>
+        <div class="mb-3">
+          <label>Password</label>
+          <input type="password" class="form-control" name="password" required>
+        </div>
+        <button class="btn btn-dark w-100">Login</button>
+        <p class="text-center mt-3">Don't have an account? <a href="/signup">Sign Up</a></p>
+      </form>
+    </div>
+  `;
+%>
+<%- include('layout', { title: 'User Login', body }) %>

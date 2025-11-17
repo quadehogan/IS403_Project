@@ -1,181 +1,122 @@
 require('dotenv').config();
 
 const express = require('express');
-
-// Makes the session variable
 const session = require('express-session');
+const path = require('path');
+const bodyParser = require('body-parser');
 
-let path = require('path');
-let bodyParser = require('body-parser');
-
-let app = express();
-
+const app = express();
 app.set('view engine', 'ejs');
 
 // PORT on deploy 3000 on test
 const port = process.env.PORT || 3000;
 
+// Session setup
 app.use(
-    session(
-        {
+  session({
     secret: process.env.SESSION_SECRET || 'fallback-secret-key',
     resave: false,
     saveUninitialized: false,
-        }
-    )
+  })
 );
 
+// --- Knex setup (commented out for now) ---
 // const knex = require("knex")({
-//     client: "pg",
-//     connection: {
-//         host : process.env.DB_HOST || "localhost",
-//         user : process.env.DB_USER || "postgres",
-//         password : process.env.DB_PASSWORD || "admin",
-//     database : process.env.DB_NAME || "foodisus", // NEED TO CHANGE WHEN DB IS CREATED
-//         port : process.env.DB_PORT || 5432  // CONFIM PORT WHEN MADE
-//     }
+//   client: "pg",
+//   connection: {
+//     host: process.env.DB_HOST || "localhost",
+//     user: process.env.DB_USER || "postgres",
+//     password: process.env.DB_PASSWORD || "admin",
+//     database: process.env.DB_NAME || "bizconnect", // update to your actual DB name
+//     port: process.env.DB_PORT || 5432
+//   }
 // });
 
 app.use(express.static(path.join(__dirname, 'public')));
-
-
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//Global authentication middleware - runs on every request
+// Global authentication middleware - runs on every request
 app.use((req, res, next) => {
-    // Skip authentication for login routes
-    if (req.path === '/' || req.path === '/login' || req.path === '/logout') {
-        // Continue with the request path
-        return next();
-    }
+  if (
+    req.path === '/' ||
+    req.path === '/login-user' ||
+    req.path === '/login-business' ||
+    req.path === '/logout' ||
+    req.path.startsWith('/signup')
+  ) {
+    return next();
+  }
 
-    // Check if user is authenticated
-    if (req.session.isLoggedIn) {
-        // no return because nothing is below it 
-        next(); // User is authenticated, proceed to the next middleware/route handler
-    }
-    else{
-        res.render("login", { errorMessage: "Please log in to access this page." });
-    }
-
+  if (req.session.isLoggedIn) {
+    next();
+  } else {
+    res.render("loginUser", { errorMessage: "Please log in to access this page." });
+  }
 });
 
+// Root route
 app.get('/', (req, res) => {
-    if (req.session.isLoggedIn) {
-        res.render('index', { username: req.session.username });
-    } else {
-        res.render('login', { errorMessage: null });
-    }
+  if (req.session.isLoggedIn) {
+    res.render('index', {
+      username: req.session.username,
+      businessName: req.session.businessName
+    });
+  } else {
+    res.render('loginUser', { errorMessage: null });
+  }
 });
 
-// This creates attributes in the session object to keep track of user and if they logged in
-app.post("/login", (req, res) => {
-    let sName = req.body.username;
-    let sPassword = req.body.password;
+// User login
+app.get("/login-user", (req, res) => {
+  res.render("loginUser", { errorMessage: null });
+});
 
-    knex.select("username", "password")
-        .from('users')
-        .where("username", sName)
-        .andWhere("password", sPassword)
-        .then(users => {
-            // Check if a user was found with matching username AND password
-            if (users.length > 0) {
-                req.session.isLoggedIn = true;
-                req.session.username = sName;
-                res.redirect("/");
-            } else {
-                // No matching user found
-                res.render("login", { error_message: "Invalid login" });
-            }
-        })
-        .catch(err => {
-            console.error("Login error:", err);
-            res.render("login", { error_message: "Invalid login" });
-        });
-
+// Business login
+app.get("/login-business", (req, res) => {
+  res.render("loginBusiness", { errorMessage: null });
 });
 
 // Logout route
 app.get("/logout", (req, res) => {
-    // Get rid of the session object
-    req.session.destroy((err) => {
-        if (err) {
-            console.log(err);
-        }
-        res.redirect("/");
-    });
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+    }
+    res.redirect("/");
+  });
 });
 
+// Signup routes (these will need knex uncommented later)
 app.get('/signup', (req, res) => {
-    res.render('signup', { title: 'Sign Up' });
+  res.render('signup', { title: 'Sign Up' });
 });
 
 app.post('/signupsumbit', (req, res) => {
-    //find username and password
-    const { username, password, email} = req.body;
-
-    // Simple validation
-    if (!username || !password || !email) {
-        return res.status(400).render("addUser", { error_message: "Username, email, and password are required." });
-    }
-
-    // create user 
-    const newUser = {
-        username,
-        password,
-        email
-    };
-
-    // insert into db
-    knex('users')
-        .insert(newUser)
-        .then(() => {
-            res.redirect('/signup');
-        })
-        .catch(err => {
-            console.error("Error creating user:", err);
-            res.status(500).render("signupUser", { error_message: "An error occurred while creating the user." });
-        });
+  const { username, password, email } = req.body;
+  if (!username || !password || !email) {
+    return res.status(400).render("signupUser", { error_message: "Username, email, and password are required." });
+  }
+  // TODO: Uncomment knex and insert into users table
+  res.redirect('/login-user');
 });
 
 app.post('/bussignupsumbit', (req, res) => {
-    //find username and password
-    // Make Category a dropdown later so we can limit options 
-    const { password, business_email, business_name, category} = req.body;
-
-    // Simple validation
-    if (!business_name || !password || !business_email) {
-        return res.status(400).render("signupBusiness", { error_message: "Business name, email, and password are required." });
-    }
-
-    // create business
-    const newBusiness = {
-        business_name,
-        password,
-        business_email,
-        category
-    };
-
-    // insert into db
-    knex('businesses')
-        .insert(newBusiness)
-        .then(() => {
-            res.redirect('/signup');
-        })
-        .catch(err => {
-            console.error("Error creating business:", err);
-            res.status(500).render("signupBusiness", { error_message: "An error occurred while creating the business." });
-        });
+  const { business_name, business_email, password, category } = req.body;
+  if (!business_name || !password || !business_email) {
+    return res.status(400).render("signupBusiness", { error_message: "Business name, email, and password are required." });
+  }
+  // TODO: Uncomment knex and insert into businesses table
+  res.redirect('/login-business');
 });
 
 app.get('/businesses', (req, res) => {
-    res.render('businesses', { title: 'Businesses' });
+  res.render('businesses', { title: 'Businesses' });
 });
 
 app.get('/services', (req, res) => {
-    res.send('<h2>Services Page Coming Soon</h2>');
+  res.send('<h2>Services Page Coming Soon</h2>');
 });
 
 app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
+  console.log(`Server is listening on port ${port}`);
 });
