@@ -9,7 +9,7 @@ const app = express();
 app.set('view engine', 'ejs');
 
 // PORT on deploy 3000 on test
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 // Session setup
 app.use(
@@ -35,24 +35,40 @@ app.use(
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Global authentication middleware - runs on every request
-app.use((req, res, next) => {
-  if (
-    req.path === '/' ||
-    req.path === '/login-user' ||
-    req.path === '/login-business' ||
-    req.path === '/logout' ||
-    req.path.startsWith('/signup')
-  ) {
+function requireLogin(req, res, next) {
+  // List of public routes that do NOT require login
+  const publicPaths = [
+    '/',
+    '/login-user',
+    '/login-business',
+    '/logout',
+    '/signup',
+    '/signup-user',
+    '/signup-business'
+  ];
+
+  // Allow access if the route is public
+  if (publicPaths.includes(req.path)) {
     return next();
   }
 
-  if (req.session.isLoggedIn) {
-    next();
-  } else {
-    res.render("loginUser", { errorMessage: "Please log in to access this page." });
+  // Allow access if the path starts with /signup
+  if (req.path.startsWith('/signup')) {
+    return next();
   }
-});
+
+  // Otherwise, check if the user is logged in
+  if (req.session.isLoggedIn) {
+    return next();
+  }
+
+  // If not logged in, send a 403 and render login page
+  res.status(403).render('loginUser', {
+    errorMessage: 'You must log in to access this page.'
+  });
+}
+
+app.use(requireLogin);
 
 // Root route
 app.get('/', (req, res) => {
