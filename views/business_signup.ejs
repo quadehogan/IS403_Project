@@ -1,0 +1,67 @@
+<%
+  const errHtml = error_message
+    ? `<div class="alert alert-danger">${error_message}</div>`
+    : '';
+
+  const body = `
+    <div class="col-md-8 mx-auto">
+      <h2 class="text-center mb-4">Business Signup</h2>
+      ${errHtml}
+      <form action="/signup-submit-business" method="POST">
+
+        <div class="mb-3">
+          <label>Business Name</label>
+          <input type="text" class="form-control" name="B_Name" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Username</label>
+          <input type="text" class="form-control" name="B_Username" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Email</label>
+          <input type="email" class="form-control" name="B_Email" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Password</label>
+          <input type="password" class="form-control" name="B_Password" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Category</label>
+          <input type="text" class="form-control" name="B_Category" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Description</label>
+          <textarea class="form-control" name="B_Description" rows="3" required></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label>Phone</label>
+          <input type="text" class="form-control" name="B_Phone" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Address</label>
+          <input type="text" class="form-control" name="B_Address" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Owner Name</label>
+          <input type="text" class="form-control" name="Owner" required>
+        </div>
+
+        <button class="btn btn-dark w-100">Create Business Account</button>
+
+        <p class="text-center mt-3">
+          Already have a business account? <a href="/loginBusinesses">Login</a>
+        </p>
+      </form>
+    </div>
+  `;
+%>
+
+<%- include('layout', { title: 'Business Signup', body }) %>

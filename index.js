@@ -91,19 +91,44 @@ app.get('/signup', (req, res) => {
   res.render('signup', { title: 'Sign Up' });
 });
 
-app.post('/signupsumbit', (req, res) => {
-  const { username, password, email } = req.body;
-  if (!username || !password || !email) {
-    return res.status(400).render("signupUser", { error_message: "Username, email, and password are required." });
-  }
-  // TODO: Uncomment knex and insert into users table
-  res.redirect('/login-user');
+app.get('/signup-user', (req, res) => {
+  res.render('user_signup', { title: 'User Sign Up' });
 });
 
-app.post('/bussignupsumbit', (req, res) => {
+app.post('/signup-submit-user', (req, res) => {
+  const { U_Username, U_Password, U_Email, U_PhoneNumber, U_Address } = req.body;
+  if (!U_Username || !U_Password || !U_Email) {
+    return res.status(400).render("user_signup", { error_message: "Username, email, and password are required." });
+  }
+
+  const newUser = {
+        U_Username,
+        U_Password,
+        U_Email,
+        U_PhoneNumber,
+        U_Address
+    };
+
+    knex("users")
+        .insert(newUser)
+        .then(() => {
+            res.redirect("/loginUser");
+        })
+        .catch((dbErr) => {
+            console.error("Error inserting user:", dbErr.message);
+            // Database error, so show the form again with a generic message.
+            res.status(500).render("user_signup", { error_message: "Unable to save user. Please try again." });
+        });
+});
+
+app.get('/signup-business', (req, res) => {
+  res.render('business_signup', { title: 'Business Sign Up' });
+});
+
+app.post('/signup-submit-business', (req, res) => {
   const { B_Name, B_Email, B_Password, B_Category, B_Description, B_Phone, B_Address, B_Username, Owner } = req.body;
   if (!B_Name || !B_Password || !B_Email || !B_Username || !B_Category || !Owner || !B_Description || !B_Phone || !B_Address) {
-    return res.status(400).render("signupBusiness", { error_message: "All fields are required for business signup." });
+    return res.status(400).render("business_signup", { error_message: "All fields are required for business signup." });
   }
 
   const newBusiness = {
@@ -127,7 +152,7 @@ app.post('/bussignupsumbit', (req, res) => {
         .catch((dbErr) => {
             console.error("Error inserting user:", dbErr.message);
             // Database error, so show the form again with a generic message.
-            res.status(500).render("addBusiness", { error_message: "Unable to save business. Please try again." });
+            res.status(500).render("business_signup", { error_message: "Unable to save business. Please try again." });
         });
 });
 

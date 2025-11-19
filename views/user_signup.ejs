@@ -1,0 +1,48 @@
+<%
+  const errHtml = error_message
+    ? `<div class="alert alert-danger">${error_message}</div>`
+    : '';
+
+  const body = `
+    <div class="col-md-6 mx-auto">
+      <h2 class="text-center mb-4">User Signup</h2>
+      ${errHtml}
+
+      <form action="/signup-submit-user" method="POST">
+
+        <div class="mb-3">
+          <label>Username</label>
+          <input type="text" class="form-control" name="U_Username" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Email</label>
+          <input type="email" class="form-control" name="U_Email" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Password</label>
+          <input type="password" class="form-control" name="U_Password" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Phone Number (optional)</label>
+          <input type="text" class="form-control" name="U_PhoneNumber">
+        </div>
+
+        <div class="mb-3">
+          <label>Address (optional)</label>
+          <input type="text" class="form-control" name="U_Address">
+        </div>
+
+        <button class="btn btn-dark w-100">Create Account</button>
+
+        <p class="text-center mt-3">
+          Already have an account? <a href="/loginUser">Login</a>
+        </p>
+      </form>
+    </div>
+  `;
+%>
+
+<%- include('layout', { title: 'User Signup', body }) %>
