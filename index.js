@@ -24,10 +24,10 @@ app.use(
 // const knex = require("knex")({
 //   client: "pg",
 //   connection: {
-//     host: process.env.DB_HOST || "localhost",
+//     host: process.env.DB_HOST || "database-1.c7u2auq6sarf.us-east-2.rds.amazonaws.com",
 //     user: process.env.DB_USER || "postgres",
-//     password: process.env.DB_PASSWORD || "admin",
-//     database: process.env.DB_NAME || "bizconnect", // update to your actual DB name
+//     password: process.env.DB_PASSWORD || "password123",
+//     database: process.env.DB_NAME || "BizConnect", // update to your actual DB name
 //     port: process.env.DB_PORT || 5432
 //   }
 // });
