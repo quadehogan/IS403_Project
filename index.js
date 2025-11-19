@@ -9,7 +9,7 @@ const app = express();
 app.set('view engine', 'ejs');
 
 // PORT on deploy 3000 on test
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 // Session setup
 app.use(
@@ -35,59 +35,25 @@ const knex = require("knex")({
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-<<<<<<< Updated upstream
 // Global authentication middleware - runs on every request
 app.use((req, res, next) => {
-  if (
-    req.path === '/' ||
-    req.path === '/login-user' ||
-    req.path === '/login-business' ||
-    req.path === '/logout' ||
-    req.path.startsWith('/signup')
-  ) {
-    return next();
-  }
-
-  if (req.session.isLoggedIn) {
-    next();
-  } else {
-    res.render("loginUser", { errorMessage: "Please log in to access this page." });
-  }
-});
-=======
-// --- Authentication Middleware ---
-function requireLogin(req, res, next) {
-    const publicPaths = [
-        '/',
-        '/login-user',
-        '/login-business',
-        '/logout',
-        '/signup',
-        '/signup-user',
-        '/signup-business',
-        '/businesses',
-        '/services'
-    ];
-
-    if (publicPaths.includes(req.path) || req.path.startsWith('/signup')) {
+    if (
+        req.path === '/' ||
+        req.path === '/login-user' ||
+        req.path === '/login-business' ||
+        req.path === '/logout' ||
+        req.path.startsWith('/signup')
+    ) {
         return next();
     }
 
+    // Otherwise, check if the user is logged in
     if (req.session.isLoggedIn) {
         return next();
     }
+});
 
-    res.status(403).render('loginUser', {
-        errorMessage: 'You must log in to access this page.'
-    });
-}
-
-app.use(requireLogin);
->>>>>>> Stashed changes
-
-// --- Routes ---
-
-// Root
+// Root route
 app.get('/', (req, res) => {
     if (req.session.isLoggedIn) {
         res.render('index', {
