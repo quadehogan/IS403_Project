@@ -101,12 +101,34 @@ app.post('/signupsumbit', (req, res) => {
 });
 
 app.post('/bussignupsumbit', (req, res) => {
-  const { business_name, business_email, password, category } = req.body;
-  if (!business_name || !password || !business_email) {
-    return res.status(400).render("signupBusiness", { error_message: "Business name, email, and password are required." });
+  const { B_Name, B_Email, B_Password, B_Category, B_Description, B_Phone, B_Address, B_Username, Owner } = req.body;
+  if (!B_Name || !B_Password || !B_Email || !B_Username || !B_Category || !Owner || !B_Description || !B_Phone || !B_Address) {
+    return res.status(400).render("signupBusiness", { error_message: "All fields are required for business signup." });
   }
-  // TODO: Uncomment knex and insert into businesses table
-  res.redirect('/login-business');
+
+  const newBusiness = {
+        B_Name,
+        B_Email,
+        B_Password,
+        B_Category,
+        B_Description,
+        B_Phone,
+        B_Address,
+        B_Username,
+        Owner
+    };
+
+    // Insert the record into PostgreSQL and return the user list on success.
+    knex("businesses")
+        .insert(newBusiness)
+        .then(() => {
+            res.redirect("/loginBusinesses");
+        })
+        .catch((dbErr) => {
+            console.error("Error inserting user:", dbErr.message);
+            // Database error, so show the form again with a generic message.
+            res.status(500).render("addBusiness", { error_message: "Unable to save business. Please try again." });
+        });
 });
 
 app.get('/businesses', (req, res) => {
