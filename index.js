@@ -47,11 +47,11 @@ function requireLogin(req, res, next) {
         '/login-business',
         '/logout',
         '/signup',
-        '/signup-user',
-        '/signup-business'
+        '/user_signup',
+        '/business_signup'
     ];
 
-    if (publicPaths.includes(req.path) || req.path.startsWith('/signup')) {
+    if (publicPaths.includes(req.path)) {
         return next();
     }
 
@@ -77,8 +77,14 @@ app.get('/', (req, res) => {
 });
 
 // Login pages
-app.get("/login-user", (req, res) => res.render("loginUser", { errorMessage: null }));
-app.get("/login-business", (req, res) => res.render("loginBusiness", { errorMessage: null }));
+app.get("/login-user", (req, res) => 
+  res.render("loginUser", { errorMessage: null }
+));
+
+app.get("/login-business", (req, res) => 
+  res.render("loginBusiness", { errorMessage: null }
+
+));
 
 // Logout
 app.get("/logout", (req, res) => {
@@ -89,9 +95,26 @@ app.get("/logout", (req, res) => {
 });
 
 // Signup pages
-app.get('/signup', (req, res) => res.render('signup', { title: 'Sign Up' }));
-app.get('/signup-user', (req, res) => res.render('user_signup', { title: 'User Sign Up' }));
-app.get('/signup-business', (req, res) => res.render('business_signup', { title: 'Business Sign Up' }));
+app.get('/signup', (req, res) => 
+  res.render('signup', { 
+    title: 'Sign Up',
+    error_message: null 
+  }
+));
+
+app.get('/user_signup', (req, res) => 
+  res.render('user_signup', { 
+    title: 'User Sign Up',
+    error_message: null 
+  }
+));
+
+app.get('/business_signup', (req, res) => 
+  res.render('business_signup', { 
+    title: 'Business Sign Up',
+    error_message: null 
+  }
+));
 
 // Signup POST - Users
 app.post('/signup-submit-user', (req, res) => {
