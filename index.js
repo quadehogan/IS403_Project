@@ -81,10 +81,70 @@ app.get("/login-user", (req, res) =>
   res.render("loginUser", { errorMessage: null }
 ));
 
+app.post("/user-login-submit", async (req, res) => {
+  const {U_Username, U_Password} = req.body;
+
+
+  try{
+
+    const user = await knex("User")
+      .where({U_Username: U_Username})
+      .first();
+
+    if(!user) {
+      return res.status(400).send("User not found");
+    }
+
+    if (user.U_Password !== U_Password) {
+      return res.status(400).send("Incorrect Password");
+    }
+
+    req.session.user = {
+      username: user.U_Username,
+      userid: user.User_ID
+    };
+
+    res.redirect("/index");
+  }catch (err) {
+    console.error(err)
+    res.status(500).send("Server error")
+  }
+
+});
+
 app.get("/login-business", (req, res) => 
   res.render("loginBusiness", { errorMessage: null }
-
 ));
+
+app.post("/login-business-submit", async (req, res) => {
+  const {B_Username, B_Password} = req.body;
+
+
+  try{
+
+    const business_user = await knex("Business")
+      .where({B_Username: B_Username})
+      .first();
+
+    if(!user) {
+      return res.status(400).send("Business not found");
+    }
+
+    if (user.B_Password !== B_Password) {
+      return res.status(400).send("Incorrect Password");
+    }
+
+    req.session.business_user = {
+      B_Username: business_user.B_Username,
+      Business_ID: business_user.Business_ID
+    };
+
+    res.redirect("/index");
+  }catch (err) {
+    console.error(err)
+    res.status(500).send("Server error")
+  }
+});
 
 // Logout
 app.get("/logout", (req, res) => {
@@ -125,7 +185,7 @@ app.post('/signup-submit-user', (req, res) => {
 
     const newUser = { U_Username, U_Password, U_Email, U_PhoneNumber, U_Address };
 
-    knex("users")
+    knex("User")
         .insert(newUser)
         .then(() => res.redirect("/login-user"))
         .catch(dbErr => {
@@ -143,7 +203,7 @@ app.post('/signup-submit-business', (req, res) => {
 
     const newBusiness = { B_Name, B_Email, B_Password, B_Category, B_Description, B_Phone, B_Address, B_Username, Owner };
 
-    knex("businesses")
+    knex("Business")
         .insert(newBusiness)
         .then(() => res.redirect("/login-business"))
         .catch(dbErr => {
