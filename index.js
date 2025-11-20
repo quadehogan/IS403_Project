@@ -1,17 +1,26 @@
+// Loads environment variables from the .env file into process.env
 require('dotenv').config();
 
-const express = require('express');
-const session = require('express-session');
-const path = require('path');
-const bodyParser = require('body-parser');
+const express = require('express');                // Import Express framework
+const session = require('express-session');        // Import session middleware for login persistence
+const path = require('path');                      // Node utility for working with file paths
+const bodyParser = require('body-parser');         // Parses form POST data (req.body)
 
 const app = express();
+
+// Tell Express to use EJS as the templating engine for rendering views
 app.set('view engine', 'ejs');
 
-// PORT on deploy 3000 on test
+// Determine which port to run the server on:
+//  - Use PORT from environment (Elastic Beanstalk, Render, etc.)
+//  - Fallback to port 5001 for local testing
 const port = process.env.PORT || 5001;
 
-// Session setup
+// ---------------------- SESSION SETUP ----------------------
+// Creates a session for each user storing things like userID
+//  - secret: used to sign/verify session cookies
+//  - resave: do not save session if nothing changed
+//  - saveUninitialized: do not create empty sessions
 app.use(
     session({
         secret: process.env.SESSION_SECRET || 'fallback-secret-key',
@@ -20,7 +29,13 @@ app.use(
     })
 );
 
-// --- Knex setup (commented out for now) ---
+// Serve static files (CSS, JS, images) from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Enable parsing of form data (application/x-www-form-urlencoded)
+app.use(bodyParser.urlencoded({ extended: true }));
+
+////////////////// KNEX SETUP //////////////////
 const knex = require("knex")({
    client: "pg",
    connection: {
@@ -32,14 +47,14 @@ const knex = require("knex")({
   }
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({ extended: true }));
-
+////////////////// UNHANDLED ERRORS //////////////////
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
   res.status(500).send("Something went wrong!");
 });
 
+
+////////////////// LOGIN PRIVLEDGES //////////////////
 function requireLogin(req, res, next) {
     const publicPaths = [
         '/',
@@ -64,7 +79,7 @@ function requireLogin(req, res, next) {
 
 app.use(requireLogin);
 
-// Root route
+////////////////// ROOT ROUTE //////////////////
 app.get('/', (req, res) => {
     if (req.session.isLoggedIn) {
         res.render('index', {
@@ -76,11 +91,13 @@ app.get('/', (req, res) => {
     }
 });
 
-// Login pages
+
+////////////////// LOGIN USER PAGES //////////////////
 app.get("/login-user", (req, res) => 
   res.render("loginUser", { errorMessage: null }
 ));
 
+////////////////// LOGIN-POST USER //////////////////
 app.post("/user-login-submit", async (req, res) => {
   const {U_Username, U_Password} = req.body;
 
@@ -112,10 +129,12 @@ app.post("/user-login-submit", async (req, res) => {
 
 });
 
+////////////////// LOGIN BUSINESS PAGES //////////////////
 app.get("/login-business", (req, res) => 
   res.render("loginBusiness", { errorMessage: null }
 ));
 
+////////////////// LOGIN-POST BUSINESS //////////////////
 app.post("/login-business-submit", async (req, res) => {
   const {B_Username, B_Password} = req.body;
 
@@ -146,7 +165,7 @@ app.post("/login-business-submit", async (req, res) => {
   }
 });
 
-// Logout
+////////////////// LOGOUT //////////////////
 app.get("/logout", (req, res) => {
     req.session.destroy(err => {
         if (err) console.log(err);
@@ -154,7 +173,7 @@ app.get("/logout", (req, res) => {
     });
 });
 
-// Signup pages
+////////////////// SIGNUP PAGES //////////////////
 app.get('/signup', (req, res) => 
   res.render('signup', { 
     title: 'Sign Up',
@@ -176,7 +195,7 @@ app.get('/business_signup', (req, res) =>
   }
 ));
 
-// Signup POST - Users
+////////////////// SIGNUP-POST USER //////////////////
 app.post('/signup-submit-user', (req, res) => {
     const { U_Username, U_Password, U_Email, U_PhoneNumber, U_Address } = req.body;
     if (!U_Username || !U_Password || !U_Email) {
@@ -194,7 +213,7 @@ app.post('/signup-submit-user', (req, res) => {
         });
 });
 
-// Signup POST - Businesses
+////////////////// SIGNUP-POST BUSINESS //////////////////
 app.post('/signup-submit-business', (req, res) => {
     const { B_Name, B_Email, B_Password, B_Category, B_Description, B_Phone, B_Address, B_Username, Owner } = req.body;
     if (!B_Name || !B_Password || !B_Email || !B_Username || !B_Category || !Owner || !B_Description || !B_Phone || !B_Address) {
@@ -212,7 +231,7 @@ app.post('/signup-submit-business', (req, res) => {
         });
 });
 
-// Display all businesses
+////////////////// DISPLAY BUSINESSES //////////////////
 app.get('/businesses', async(req, res) => {
     try {
         const businesses = await knex('businesses').select('*');
@@ -223,7 +242,7 @@ app.get('/businesses', async(req, res) => {
     }
 });
 
-// Services page
+////////////////// DISPLAY SERVICES //////////////////
 app.get('/services', (req, res) => {
     res.send('<h2>Services Page Coming Soon</h2>');
 });
