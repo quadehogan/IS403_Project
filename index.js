@@ -1,5 +1,4 @@
 // Loads environment variables from the .env file into process.env
-require('dotenv').config();
 
 const express = require('express');                // Import Express framework
 const session = require('express-session');        // Import session middleware for login persistence
@@ -10,6 +9,9 @@ const app = express();
 
 // Tell Express to use EJS as the templating engine for rendering views
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+
 
 // Determine which port to run the server on:
 //  - Use PORT from environment (Elastic Beanstalk, Render, etc.)
@@ -39,13 +41,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const knex = require("knex")({
    client: "pg",
    connection: {
-     host: process.env.DB_HOST,
-     user: process.env.DB_USER || "postgres",
-     password: process.env.DB_PASSWORD || "admin",
-     database: process.env.DB_NAME || "BizConnect", // update to your actual DB name
-     port: process.env.DB_PORT || 5432
+     host: process.env.DB_HOST,        // ✅ Matches
+     user: process.env.DB_USER,        // ✅ Matches
+     password: process.env.DB_PASSWORD, // ✅ Matches
+     database: process.env.DB_NAME,    // ✅ Matches
+     port: process.env.DB_PORT         // ✅ Matches
   }
 });
+////////////////// TEST DB CONNECTION //////////////////
 
 ////////////////// UNHANDLED ERRORS //////////////////
 app.use((err, req, res, next) => {
