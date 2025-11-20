@@ -9,7 +9,7 @@ const app = express();
 app.set('view engine', 'ejs');
 
 // PORT on deploy 3000 on test
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
 // Session setup
 app.use(
@@ -21,19 +21,24 @@ app.use(
 );
 
 // --- Knex setup (commented out for now) ---
-// const knex = require("knex")({
-//   client: "pg",
-//   connection: {
-//     host: process.env.DB_HOST || "localhost",
-//     user: process.env.DB_USER || "postgres",
-//     password: process.env.DB_PASSWORD || "admin",
-//     database: process.env.DB_NAME || "bizconnect", // update to your actual DB name
-//     port: process.env.DB_PORT || 5432
-//   }
-// });
+const knex = require("knex")({
+   client: "pg",
+   connection: {
+     host: process.env.DB_HOST,
+     user: process.env.DB_USER || "postgres",
+     password: process.env.DB_PASSWORD || "admin",
+     database: process.env.DB_NAME || "BizConnect", // update to your actual DB name
+     port: process.env.DB_PORT || 5432
+  }
+});
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).send("Something went wrong!");
+});
 
 function requireLogin(req, res, next) {
   // List of public routes that do NOT require login
