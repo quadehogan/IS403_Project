@@ -1,27 +1,61 @@
 <%- include('layout', {
   title: 'Businesses',
   body: `
-  <h2 class="text-center mb-4">Local Businesses</h2>
-  <div class="text-center mb-4">
-    <input type="text" placeholder="Search by name..." class="form-control w-50 mx-auto">
-  </div>
-  <div class="row">
-    <div class="col-md-4 mb-4">
-      <div class="card">
-        <div class="card-body text-center">
-          <h5>Example Bakery</h5>
-          <p>Fresh pastries and breads daily.</p>
-        </div>
-      </div>
+    <h2 class="text-center mb-4">Local Businesses</h2>
+
+    <div class="text-center mb-4">
+      <input type="text" id="searchBox" placeholder="Search by name..." class="form-control w-50 mx-auto">
     </div>
-    <div class="col-md-4 mb-4">
-      <div class="card">
-        <div class="card-body text-center">
-          <h5>Sunny Salon</h5>
-          <p>Professional hair and beauty services.</p>
-        </div>
-      </div>
+
+    <% if (error_message) { %>
+    <div class="alert alert-danger text-center">
+        <%= error_message %>
     </div>
-  </div>
-  `
-}) %>
+    <% } else if (businesses.length === 0) { %>
+        <div class="alert alert-warning text-center">
+            No businesses found in the database.
+        </div>
+        <% } %>
+
+            <div class="row" id="businessList">
+                <% businesses.forEach(b => { %>
+                    <div class="col-md-4 mb-4 businessCard" data-name="<%= b.B_Name.toLowerCase() %>">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5>
+                                    <%= b.B_Name %>
+                                </h5>
+                                <p><strong>Category:</strong>
+                                    <%= b.B_Category %>
+                                </p>
+                                <p><strong>Owner:</strong>
+                                    <%= b.Owner %>
+                                </p>
+                                <p><strong>Phone:</strong>
+                                    <%= b.B_Phone %>
+                                </p>
+                                <p><strong>Address:</strong>
+                                    <%= b.B_Address %>
+                                </p>
+                                <p>
+                                    <%= b.B_Description %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+
+            <script>
+                const searchBox = document.getElementById('searchBox');
+                const cards = document.querySelectorAll('.businessCard');
+
+                searchBox.addEventListener('input', () => {
+                    const query = searchBox.value.toLowerCase();
+                    cards.forEach(card => {
+                        const name = card.dataset.name;
+                        card.style.display = name.includes(query) ? '' : 'none';
+                    });
+                });
+            </script>
+            ` }) %>
