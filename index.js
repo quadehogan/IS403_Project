@@ -99,10 +99,7 @@ app.post("/user-login-submit", async (req, res) => {
       return res.status(400).send("Incorrect Password");
     }
 
-    req.session.user = {
-      username: user.U_Username,
-      userid: user.User_ID
-    };
+    req.session.user = user;
 
     res.redirect("/index");
   }catch (err) {
@@ -128,18 +125,15 @@ app.post("/login-business-submit", async (req, res) => {
       .where({B_Username: B_Username})
       .first();
 
-    if(!user) {
+    if(!business_useruser) {
       return res.status(400).send("Business not found");
     }
 
-    if (user.B_Password !== B_Password) {
+    if (business_useruser.B_Password !== B_Password) {
       return res.status(400).send("Incorrect Password");
     }
 
-    req.session.business_user = {
-      B_Username: business_user.B_Username,
-      Business_ID: business_user.Business_ID
-    };
+    req.session.business_user = business_user;
 
     res.redirect("/index");
   }catch (err) {
@@ -227,7 +221,72 @@ app.get('/businesses', requireLogin, async(req, res) => {
 
 ////////////////// DISPLAY SERVICES //////////////////
 app.get('/services', requireLogin, (req, res) => {
-    res.send('<h2>Services Page Coming Soon</h2>');
+  let accountType = null;
+  let accountInfo = null;
+
+  if (req.session.user) {
+    accountType = 'user';
+    accountInfo = req.session.user; // contains username, userid
+  } else if (req.session.business_user) {
+      accountType = 'business';
+      accountInfo = req.session.business_user; // contains B_Username, Business_ID
+  } else {
+      // Just in case, redirect to login if nothing is found
+      return res.redirect('/');
+  }
+
+  // Render the services page and pass account info
+  res.render('services', { 
+    accountType, 
+    accountInfo, 
+    errorMessage: null 
+  });
+});
+
+////////////////// ADD SERVICES //////////////////
+app.get('/business-submit-service', requireLogin, (req, res) => {
+  // Only businesses can access
+  if (req.session.business_user) {
+    res.render('add_service', { 
+      errorMessage: null,
+      accountInfo: req.session.business_user 
+    });
+  } else {
+    res.status(403).send("Only businesses can add services.");
+  }
+});
+
+////////////////// ADD SERVICES SUBMISSION //////////////////
+app.post('/business-submit-service', requireLogin, async (req, res) => {
+  if (!req.session.business_user) {
+    return res.status(403).send("Only businesses can add services.");
+  }
+
+  const { S_Title, S_Description, S_Price } = req.body;
+
+  if (!S_Title || !S_Description || !S_Price) {
+    return res.status(400).render('add_service', {
+      errorMessage: "All fields are required.",
+      accountInfo: req.session.business_user
+    });
+  }
+
+  try {
+    await knex('Services').insert({
+      S_Title,
+      S_Description,
+      S_Price: parseFloat(S_Price),
+      Business_ID: req.session.business_user.Business_ID
+    });
+
+    res.redirect('/services'); // back to services list
+  } catch (err) {
+    console.error(err);
+    res.status(500).render('add_service', {
+      errorMessage: "Error saving service. Try again.",
+      accountInfo: req.session.business_user
+    });
+  }
 });
 
 // Start server
