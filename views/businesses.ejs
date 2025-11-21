@@ -22,9 +22,11 @@
                     <div class="col-md-4 mb-4 businessCard" data-name="<%= b.B_Name.toLowerCase() %>">
                         <div class="card h-100">
                             <div class="card-body text-center">
-                                <h5>
+                                <form action="/business_review/<%= b.Business_ID %>" method="GET" class="mb-4">
+                                    <button type="submit" class="btn btn-primary"><h5>
                                     <%= b.B_Name %>
-                                </h5>
+                                </h5></button>
+                                </form>
                                 <p><strong>Category:</strong>
                                     <%= b.B_Category %>
                                 </p>
