@@ -219,6 +219,52 @@ app.get('/businesses', requireLogin, async(req, res) => {
     }
 });
 
+////////////////// DISPLAY COMMENTS //////////////////
+app.get('/business_review/:Business_ID', requireLogin, async (req, res) => {
+  const Business_ID = req.params.Business_ID;
+  let accountType = null;
+  let accountInfo = null;
+
+  if (req.session.user) {
+    accountType = 'user';
+    accountInfo = req.session.user;
+  } else if (req.session.business_user) {
+    accountType = 'business';
+    accountInfo = req.session.business_user;
+  } else {
+    return res.redirect('/');
+  }
+
+  try {
+    // Fetch business info
+    const business = await knex("Business").where({ Business_ID }).first();
+
+    // Fetch reviews for this business
+    const reviews = await knex("Reviews")
+      .where({ Business_ID })
+      .select("*");
+
+    res.render('business_review', {
+      accountType,
+      accountInfo,
+      business,
+      reviews,
+      errorMessage: null
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).render('business_review', {
+      accountType,
+      accountInfo,
+      business: null,
+      reviews: [],
+      errorMessage: "Unable to load business or reviews."
+    });
+  }
+});
+
+
+
 ////////////////// DISPLAY SERVICES //////////////////
 app.get('/services', requireLogin, (req, res) => {
   let accountType = null;
