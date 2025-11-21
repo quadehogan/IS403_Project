@@ -263,7 +263,67 @@ app.get('/business_review/:Business_ID', requireLogin, async (req, res) => {
   }
 });
 
+////////////////// ADD COMMENTS //////////////////
+app.post('/add_comment/:Business_ID', requireLogin, async (req, res) => {
+  const Business_ID = req.params.Business_ID;
+  const { Review, Rating } = req.body;
 
+  // Only users can add comments
+  if (!req.session.user) {
+    return res.status(403).send("Only users can add reviews");
+  }
+
+  const User_ID = req.session.user.User_ID;
+
+  try {
+    // Insert new review into the Reviews table
+    await knex('Reviews').insert({
+      Business_ID,
+      User_ID,
+      Review,
+      Rating
+    });
+
+    // Redirect back to the business review page
+    res.redirect(`/business_review/${Business_ID}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Unable to add review");
+  }
+});
+
+
+////////////////// DELETE COMMENTS //////////////////
+app.post('/delete_review/:Review_ID', requireLogin, async (req, res) => {
+  const reviewID = req.params.Review_ID;
+
+  try {
+    // Fetch review first
+    const review = await knex('Reviews')
+      .where({ Review_ID: reviewID })
+      .first();
+
+    if (!review) {
+      return res.status(404).send("Review not found");
+    }
+
+    // Only allow deletion if the logged-in user owns the review
+    if (!req.session.user || req.session.user.User_ID !== review.User_ID) {
+      return res.status(403).send("You are not allowed to delete this review");
+    }
+
+    // Delete review
+    await knex('Reviews')
+      .where({ Review_ID: reviewID })
+      .del();
+
+    // Redirect back to the business review page
+    res.redirect(`/business_review/${review.Business_ID}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
 
 ////////////////// DISPLAY SERVICES //////////////////
 app.get('/services', requireLogin, (req, res) => {
