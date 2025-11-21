@@ -59,44 +59,24 @@ app.use((err, req, res, next) => {
 
 ////////////////// LOGIN PRIVLEDGES //////////////////
 function requireLogin(req, res, next) {
-    const publicPaths = [
-        '/',
-        '/login-user',
-        '/login-business',
-        '/logout',
-        '/signup',
-        '/user_signup',
-        '/business_signup'
-    ];
-
-    if (publicPaths.includes(req.path)) {
-        return next();
+    if (!req.session.user) {
+        return res.redirect('/');
     }
-
-    if (req.session.isLoggedIn) {
-        return next();
-    }
-
-    res.status(403).render('loginUser', { errorMessage: 'You must log in to access this page.' });
+    next();
 }
-
-app.use(requireLogin);
 
 ////////////////// ROOT ROUTE //////////////////
 app.get('/', (req, res) => {
-    if (req.session.isLoggedIn) {
-        res.render('index', {
-            username: req.session.username,
-            businessName: req.session.businessName
-        });
-    } else {
-        res.render('loginUser', { errorMessage: null });
-    }
+    res.render("signup", {errorMessage: null})
+});
+
+app.get("/index", requireLogin, (req, res) => {
+  res.render("index", {errorMessage: null})
 });
 
 
 ////////////////// LOGIN USER PAGES //////////////////
-app.get("/login-user", (req, res) => 
+app.get("/loginUser", (req, res) => 
   res.render("loginUser", { errorMessage: null }
 ));
 
@@ -133,7 +113,7 @@ app.post("/user-login-submit", async (req, res) => {
 });
 
 ////////////////// LOGIN BUSINESS PAGES //////////////////
-app.get("/login-business", (req, res) => 
+app.get("/loginBusiness", (req, res) => 
   res.render("loginBusiness", { errorMessage: null }
 ));
 
@@ -235,7 +215,7 @@ app.post('/signup-submit-business', (req, res) => {
 });
 
 ////////////////// DISPLAY BUSINESSES //////////////////
-app.get('/businesses', async(req, res) => {
+app.get('/businesses', requireLogin, async(req, res) => {
     try {
         const businesses = await knex('businesses').select('*');
         res.render('businesses', { businesses, error_message: null });
@@ -246,7 +226,7 @@ app.get('/businesses', async(req, res) => {
 });
 
 ////////////////// DISPLAY SERVICES //////////////////
-app.get('/services', (req, res) => {
+app.get('/services', requireLogin, (req, res) => {
     res.send('<h2>Services Page Coming Soon</h2>');
 });
 
