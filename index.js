@@ -183,7 +183,7 @@ app.post('/signup-submit-user', (req, res) => {
 
     knex("User")
         .insert(newUser)
-        .then(() => res.redirect("/login-user"))
+        .then(() => res.redirect("/loginUser"))
         .catch(dbErr => {
             console.error("Error inserting user:", dbErr.message);
             res.status(500).render("user_signup", { error_message: "Unable to save user. Please try again." });
@@ -201,7 +201,7 @@ app.post('/signup-submit-business', (req, res) => {
 
     knex("Business")
         .insert(newBusiness)
-        .then(() => res.redirect("/login-business"))
+        .then(() => res.redirect("/loginBusiness"))
         .catch(dbErr => {
             console.error("Error inserting business:", dbErr.message);
             res.status(500).render("business_signup", { error_message: "Unable to save business. Please try again." });
