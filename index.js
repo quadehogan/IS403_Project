@@ -64,7 +64,10 @@ app.use((err, req, res, next) => {
 ////////////////// LOGIN PRIVLEDGES //////////////////
 function requireLogin(req, res, next) {
     if (!req.session.user) {
-        return res.redirect('/');
+      return res.redirect('/');
+    }
+    else if (!req.session.business_user) {
+      return res.redirect('/');
     }
     next();
 }
