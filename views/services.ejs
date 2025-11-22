@@ -28,17 +28,21 @@
                     ? `
                     <div class="d-flex justify-content-center gap-2 flex-nowrap">
 
-                      <a href="/edit_service/${service.Service_ID}" 
-                         class="btn btn-sm btn-primary" 
-                         style="min-width: 80px;">
-                        Edit
-                      </a>
+                      <!-- EDIT FORM (GET) -->
+                      <form action="/edit_service/${service.Service_ID}" method="GET" style="display:inline;">
+                        <button type="submit"
+                                class="btn btn-sm btn-primary"
+                                style="min-width: 80px;">
+                          Edit
+                        </button>
+                      </form>
 
-                      <form action="/delete_service/${service.Service_ID}" 
-                            method="POST" 
+                      <!-- DELETE FORM (POST) -->
+                      <form action="/delete_service/${service.Service_ID}"
+                            method="POST"
                             style="display:inline;">
-                        <button type="submit" 
-                                class="btn btn-sm btn-danger" 
+                        <button type="submit"
+                                class="btn btn-sm btn-danger"
                                 style="min-width: 80px;">
                           Delete
                         </button>
@@ -70,3 +74,4 @@
   </div>
   `
 }) %>
+
