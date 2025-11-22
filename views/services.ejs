@@ -20,20 +20,26 @@
       </tr>
     </thead>
     <tbody>
-      <% services.forEach(service => { %>
-        <tr>
-          <td><%= service.Service_ID %></td>
-          <td><%= service.S_Title %></td>
-          <td><%= service.S_Description %></td>
-          <td>$<%= Number(service.S_Price).toFixed(2) %></td>
-          <td>
-            <% if (accountType === 'business' && accountInfo.Business_ID === service.Business_ID) { %>
-              <a href="/edit_service/<%= service.Service_ID %>" class="btn btn-sm btn-primary me-1">Edit</a>
-              <a href="/delete_service/<%= service.Service_ID %>" class="btn btn-sm btn-danger">Delete</a>
-            <% } %>
-          </td>
-        </tr>
+    <% if (services.length === 0) { %>
+      <tr>
+        <td colspan="5" class="text-center">No services available</td>
+      </tr>
+    <% } else { %>
+    <% services.forEach(service => { %>
+      <tr>
+        <td><%= service.Service_ID %></td>
+        <td><%= service.S_Title %></td>
+        <td><%= service.S_Description %></td>
+        <td>$<%= Number(service.S_Price).toFixed(2) %></td>
+        <td>
+          <% if (accountType === 'business' && accountInfo.Business_ID === service.Business_ID) { %>
+            <a href="/edit_service/<%= service.Service_ID %>" class="btn btn-sm btn-primary me-1">Edit</a>
+            <a href="/delete_service/<%= service.Service_ID %>" class="btn btn-sm btn-danger">Delete</a>
+          <% } %>
+        </td>
+      </tr>
       <% }) %>
+      <% } %>
     </tbody>
   </table>
 

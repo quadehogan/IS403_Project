@@ -331,35 +331,29 @@ app.post('/delete_review/:Review_ID', requireLogin, async (req, res) => {
 
 ////////////////// DISPLAY SERVICES //////////////////
 app.get('/services', requireLogin, async (req, res) => {
-  let accountType = null;
-  let accountInfo = null;
-
-  if (req.session.user) {
-    accountType = 'user';
-    accountInfo = req.session.user; // username, userid
-  } else if (req.session.business_user) {
-    accountType = 'business';
-    accountInfo = req.session.business_user; // B_Username, Business_ID
-  } else {
-    // Redirect to login if no session
-    return res.redirect('/');
-  }
-
   try {
-    // Fetch all services from the database
-    const services = await knex('Services').select('*');
+    let accountType = null;
+    let accountInfo = null;
 
-    res.render('services', { 
-      accountType, 
-      accountInfo, 
-      services,      // pass the array of services to the template
-      errorMessage: null 
-    });
+    if (req.session.user) {
+      accountType = 'user';
+      accountInfo = req.session.user;
+    } else if (req.session.business_user) {
+      accountType = 'business';
+      accountInfo = req.session.business_user;
+    } else {
+      return res.redirect('/');
+    }
+
+    const services = await knex('Services').select('*') || [];
+
+    res.render('services', { accountType, accountInfo, services, errorMessage: null });
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error while fetching services");
+    console.error('Error loading services:', err);
+    res.status(500).send('Internal Server Error');
   }
 });
+
 
 
 ////////////////// ADD SERVICES //////////////////
