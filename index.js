@@ -228,7 +228,7 @@ app.get('/businesses', requireLogin, async (req, res) => {
       return res.redirect('/');
     }
 
-    const businesses = await knex('Businesses').select('*') || [];
+    const businesses = await knex('Business').select('*') || [];
 
     res.render('businesses', { accountType, accountInfo, businesses, errorMessage: null });
   } catch (err) {
