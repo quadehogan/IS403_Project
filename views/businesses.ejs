@@ -1,54 +1,5 @@
 <%- include('layout', {
   title: 'Businesses',
-  body: `
-  <div class="col-md-8 mx-auto mt-4">
-    <h2 class="text-center mb-4">Local Businesses</h2>
-
-    ${errorMessage ? `<div class="alert alert-danger">${errorMessage}</div>` : ''}
-
-    ${
-      businesses.length === 0
-        ? '<div class="alert alert-warning text-center">No businesses found in the database.</div>'
-        : `
-          <div class="row" id="businessList">
-            ${businesses.map(b => {
-              return `
-                <div class="col-md-4 mb-4 businessCard" data-name="${b.B_Name.toLowerCase()}">
-                  <div class="card h-100">
-                    <div class="card-body text-center">
-                      <form action="/business_review/${b.Business_ID}" method="GET" class="mb-4">
-                        <button type="submit" class="btn btn-primary">
-                          <h5>${b.B_Name}</h5>
-                        </button>
-                      </form>
-                      <p><strong>Category:</strong> ${b.B_Category}</p>
-                      <p><strong>Owner:</strong> ${b.Owner}</p>
-                      <p><strong>Phone:</strong> ${b.B_Phone}</p>
-                      <p><strong>Email:</strong> ${b.B_Email}</p>
-                      <p><strong>Address:</strong> ${b.B_Address}</p>
-                      <p>${b.B_Description}</p>
-                    </div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        `
-    }
-  </div>
-
-  <script>
-    const searchBox = document.getElementById('searchBox');
-    if (searchBox) {
-      const cards = document.querySelectorAll('.businessCard');
-      searchBox.addEventListener('input', () => {
-        const query = searchBox.value.toLowerCase();
-        cards.forEach(card => {
-          const name = card.dataset.name;
-          card.style.display = name.includes(query) ? '' : 'none';
-        });
-      });
-    }
-  </script>
-  `
+  body: include('bus_content', { businesses, errorMessage })
 }) %>
+
