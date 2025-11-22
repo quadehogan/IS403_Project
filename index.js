@@ -1,4 +1,6 @@
 // Loads environment variables from the .env file into process.env
+require('dotenv').config();
+console.log("SESSION SECRET:", process.env.SESSION_SECRET);
 
 const express = require('express');                // Import Express framework
 const session = require('express-session');        // Import session middleware for login persistence
@@ -31,7 +33,6 @@ app.use(
     })
 );
 
-console.log("SESSION SECRET:", process.env.SESSION_SECRET);
 
 // Serve static files (CSS, JS, images) from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -47,7 +48,11 @@ const knex = require("knex")({
      user: process.env.DB_USER,        // ✅ Matches
      password: process.env.DB_PASSWORD, // ✅ Matches
      database: process.env.DB_NAME,    // ✅ Matches
-     port: process.env.DB_PORT         // ✅ Matches
+     port: process.env.DB_PORT,         // ✅ Matches
+     ssl: {
+      rejectUnauthorized: false       // important for AWS RDS Postgres
+    },
+  pool: { min: 0, max: 10 }    
   }
 });
 ////////////////// TEST DB CONNECTION //////////////////
