@@ -1,0 +1,49 @@
+<div class="col-md-8 mx-auto mt-4">
+  <!-- Business Info -->
+  <h2 class="text-center mb-2"><%= business.B_Name %></h2>
+  <h5 class="text-center text-muted mb-3"><%= business.B_Category %></h5>
+  <p class="text-center mb-4"><%= business.B_Description %></p>
+
+  <!-- Reviews -->
+  <h4 class="mb-3">Reviews</h4>
+
+  <% if (reviews.length === 0) { %>
+    <div class="alert alert-warning text-center">
+      No reviews yet for this business.
+    </div>
+  <% } else { %>
+    <div class="reviews-list">
+      <% reviews.forEach(r => { %>
+        <div class="review mb-3">
+          <p><strong>Rating:</strong> <%= r.Rating %>/5</p>
+          <p><%= r.Review %></p>
+
+          <% if (accountType === 'user' && accountInfo.User_ID === r.User_ID) { %>
+            <form action="/delete_review/<%= r.Review_ID %>" method="POST" class="mt-2">
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          <% } %>
+
+          <hr>
+        </div>
+      <% }) %>
+
+      <% if (accountType === 'user') { %>
+        <div class="add-comment mt-4">
+          <h5>Add a Review</h5>
+          <form action="/add_comment/<%= business.Business_ID %>" method="POST">
+            <div class="mb-2">
+              <label for="rating">Rating (1-5)</label>
+              <input type="number" min="1" max="5" class="form-control" name="Rating" required>
+            </div>
+            <div class="mb-2">
+              <label for="review">Review</label>
+              <textarea class="form-control" name="Review" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Submit Review</button>
+          </form>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
+</div>
