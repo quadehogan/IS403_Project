@@ -63,13 +63,11 @@ app.use((err, req, res, next) => {
 
 ////////////////// LOGIN PRIVLEDGES //////////////////
 function requireLogin(req, res, next) {
-    if (!req.session.user) {
-      return res.redirect('/');
-    }
-    else if (!req.session.business_user) {
-      return res.redirect('/');
-    }
-    next();
+  if (!req.session.user && !req.session.business_user) {
+    // Neither is logged in → redirect to signup/login
+    return res.redirect('/');
+  }
+  next();
 }
 
 ////////////////// ROOT ROUTE //////////////////
