@@ -129,11 +129,11 @@ app.post("/login-business-submit", async (req, res) => {
       .where({B_Username: B_Username})
       .first();
 
-    if(!business_useruser) {
+    if(!business_user) {
       return res.status(400).send("Business not found");
     }
 
-    if (business_useruser.B_Password !== B_Password) {
+    if (business_user.B_Password !== B_Password) {
       return res.status(400).send("Incorrect Password");
     }
 
