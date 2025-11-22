@@ -384,7 +384,13 @@ app.get('/services', requireLogin, async (req, res) => {
       return res.redirect('/');
     }
 
-    const services = await knex('Services').select('*') || [];
+    // Join Services with Business to get B_Name
+    const services = await knex('Services')
+      .join('Business', 'Services.Business_ID', '=', 'Business.Business_ID')
+      .select(
+        'Services.*',    // all service columns
+        'Business.B_Name' // business name
+      );
 
     res.render('services', { accountType, accountInfo, services, errorMessage: null });
   } catch (err) {
@@ -392,7 +398,6 @@ app.get('/services', requireLogin, async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
 
 
 ////////////////// ADD SERVICES //////////////////
