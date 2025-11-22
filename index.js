@@ -446,6 +446,60 @@ app.post('/business-submit-service', requireLogin, async (req, res) => {
   }
 });
 
+////////////////// GET EDIT SERVICES //////////////////
+app.get('/edit_service/:serviceID', requireLogin, async (req, res) => {
+  const { serviceID } = req.params;
+
+  try {
+    const service = await knex("Services")
+      .where({ Service_ID: serviceID })
+      .first();
+
+    if (!service) {
+      return res.status(404).send("Service not found");
+    }
+
+    res.render("edit_service", {
+      service,
+      errorMessage: null
+    });
+  } catch (err) {
+    console.error("Error loading service:", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+////////////////// POST EDIT SERVICES //////////////////
+app.post('/edit_service/:serviceID', requireLogin, async (req, res) => {
+  const { serviceID } = req.params;
+  const { S_Title, S_Description, S_Price } = req.body;
+
+  try {
+    await knex("Services")
+      .where({ Service_ID: serviceID })
+      .update({
+        S_Title,
+        S_Description,
+        S_Price
+      });
+
+    res.redirect("/services");
+  } catch (err) {
+    console.error("Error updating service:", err);
+
+    // Reload page with error message
+    const service = await knex("Services")
+      .where({ Service_ID: serviceID })
+      .first();
+
+    return res.render("edit_service", {
+      service,
+      errorMessage: "Unable to update service. Please try again."
+    });
+  }
+});
+
+
 ////////////////// DELETE SERVICES //////////////////
 app.post('/delete_service/:Service_ID', requireLogin, async (req, res) => {
   const { Service_ID } = req.params;
