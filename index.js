@@ -396,7 +396,7 @@ app.get('/services', requireLogin, async (req, res) => {
 
 
 ////////////////// ADD SERVICES //////////////////
-app.get('/business-submit-service', requireLogin, (req, res) => {
+app.get('/add_services', requireLogin, (req, res) => {
   // Only businesses can access
   if (req.session.business_user) {
     res.render('add_services', { 
