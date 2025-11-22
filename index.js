@@ -262,9 +262,11 @@ app.get('/businesses', requireLogin, async (req, res) => {
 });
 
 
-////////////////// DISPLAY COMMENTS //////////////////
 app.get('/business_review/:Business_ID', requireLogin, async (req, res) => {
-  const Business_ID = Number(req.params.Business_ID); // cast to number
+  const Business_ID = Number(req.params.Business_ID);
+  console.log("Business_ID param:", req.params.Business_ID);
+  console.log("Business_ID number:", Business_ID);
+
   let accountType = null;
   let accountInfo = null;
 
@@ -279,12 +281,7 @@ app.get('/business_review/:Business_ID', requireLogin, async (req, res) => {
   }
 
   try {
-    // Fetch business info
-    const business = await knex("Business")
-      .where({ Business_ID })
-      .first();
-
-    // If business doesn't exist, show error page
+    const business = await knex("Business").where({ Business_ID }).first();
     if (!business) {
       return res.status(404).render('business_review', {
         accountType,
@@ -295,10 +292,7 @@ app.get('/business_review/:Business_ID', requireLogin, async (req, res) => {
       });
     }
 
-    // Fetch reviews for this business
-    const reviews = await knex("Reviews")
-      .where({ Business_ID })
-      .select("*");
+    const reviews = await knex("Reviews").where({ Business_ID }).select("*");
 
     res.render('business_review', {
       accountType,
@@ -318,6 +312,7 @@ app.get('/business_review/:Business_ID', requireLogin, async (req, res) => {
     });
   }
 });
+
 
 ////////////////// ADD COMMENTS //////////////////
 app.post('/add_comment/:Business_ID', requireLogin, async (req, res) => {
