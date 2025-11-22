@@ -213,15 +213,30 @@ app.post('/signup-submit-business', (req, res) => {
 });
 
 ////////////////// DISPLAY BUSINESSES //////////////////
-app.get('/businesses', requireLogin, async(req, res) => {
-    try {
-        const businesses = await knex('Businesses').select('*');
-        res.render('businesses', { businesses, error_message: null });
-    } catch (err) {
-        console.error('Error loading businesses:', err);
-        res.render('businesses', { businesses: [], error_message: 'Unable to load businesses.' });
+app.get('/businesses', requireLogin, async (req, res) => {
+  try {
+    let accountType = null;
+    let accountInfo = null;
+
+    if (req.session.user) {
+      accountType = 'user';
+      accountInfo = req.session.user;
+    } else if (req.session.business_user) {
+      accountType = 'business';
+      accountInfo = req.session.business_user;
+    } else {
+      return res.redirect('/');
     }
+
+    const businesses = await knex('Businesses').select('*') || [];
+
+    res.render('businesses', { accountType, accountInfo, businesses, errorMessage: null });
+  } catch (err) {
+    console.error('Error loading businesses:', err);
+    res.status(500).send('Internal Server Error');
+  }
 });
+
 
 ////////////////// DISPLAY COMMENTS //////////////////
 app.get('/business_review/:Business_ID', requireLogin, async (req, res) => {
