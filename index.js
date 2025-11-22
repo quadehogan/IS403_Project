@@ -399,7 +399,7 @@ app.get('/services', requireLogin, async (req, res) => {
 app.get('/business-submit-service', requireLogin, (req, res) => {
   // Only businesses can access
   if (req.session.business_user) {
-    res.render('add_service', { 
+    res.render('add_services', { 
       errorMessage: null,
       accountInfo: req.session.business_user 
     });
@@ -417,7 +417,7 @@ app.post('/business-submit-service', requireLogin, async (req, res) => {
   const { S_Title, S_Description, S_Price } = req.body;
 
   if (!S_Title || !S_Description || !S_Price) {
-    return res.status(400).render('add_service', {
+    return res.status(400).render('add_services', {
       errorMessage: "All fields are required.",
       accountInfo: req.session.business_user
     });
@@ -434,7 +434,7 @@ app.post('/business-submit-service', requireLogin, async (req, res) => {
     res.redirect('/services'); // back to services list
   } catch (err) {
     console.error(err);
-    res.status(500).render('add_service', {
+    res.status(500).render('add_services', {
       errorMessage: "Error saving service. Try again.",
       accountInfo: req.session.business_user
     });
