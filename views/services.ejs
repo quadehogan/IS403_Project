@@ -23,8 +23,12 @@
             : services.map(service => {
                 const actions =
                   accountType === 'business' && accountInfo.Business_ID === service.Business_ID
-                    ? `<a href="/edit_service/${service.Service_ID}" class="btn btn-sm btn-primary me-1">Edit</a>
-                       <a href="/delete_service/${service.Service_ID}" class="btn btn-sm btn-danger">Delete</a>`
+                    ? `
+                      <a href="/edit_service/${service.Service_ID}" class="btn btn-sm btn-primary me-1">Edit</a>
+                      <form action="/delete_service/${service.Service_ID}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                      </form>
+                    `
                     : '';
                 return `
                   <tr>
@@ -48,3 +52,4 @@
   </div>
   `
 }) %>
+
