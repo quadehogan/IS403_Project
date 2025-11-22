@@ -441,5 +441,38 @@ app.post('/business-submit-service', requireLogin, async (req, res) => {
   }
 });
 
+////////////////// DELETE SERVICES //////////////////
+app.post('/delete_service/:Service_ID', requireLogin, async (req, res) => {
+  const { Service_ID } = req.params;
+
+  // Only allow the business that owns the service to delete it
+  if (!req.session.business_user) {
+    return res.status(403).send("Only businesses can delete services.");
+  }
+
+  try {
+    const service = await knex('Services')
+      .where({ Service_ID })
+      .first();
+
+    if (!service) {
+      return res.status(404).send("Service not found");
+    }
+
+    if (service.Business_ID !== req.session.business_user.Business_ID) {
+      return res.status(403).send("You cannot delete this service.");
+    }
+
+    await knex('Services')
+      .where({ Service_ID })
+      .del();
+
+    res.redirect('/services');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error while deleting service");
+  }
+});
+
 // Start server
 app.listen(port, () => console.log(`Server is listening on port ${port}`));
