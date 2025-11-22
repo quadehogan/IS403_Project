@@ -264,7 +264,7 @@ app.get('/businesses', requireLogin, async (req, res) => {
 
 ////////////////// DISPLAY COMMENTS //////////////////
 app.get('/business_review/:Business_ID', requireLogin, async (req, res) => {
-  const Business_ID = req.params.Business_ID;
+  const Business_ID = Number(req.params.Business_ID); // cast to number
   let accountType = null;
   let accountInfo = null;
 
@@ -280,7 +280,20 @@ app.get('/business_review/:Business_ID', requireLogin, async (req, res) => {
 
   try {
     // Fetch business info
-    const business = await knex("Business").where({ Business_ID }).first();
+    const business = await knex("Business")
+      .where({ Business_ID })
+      .first();
+
+    // If business doesn't exist, show error page
+    if (!business) {
+      return res.status(404).render('business_review', {
+        accountType,
+        accountInfo,
+        business: null,
+        reviews: [],
+        errorMessage: "Business not found."
+      });
+    }
 
     // Fetch reviews for this business
     const reviews = await knex("Reviews")
@@ -295,7 +308,7 @@ app.get('/business_review/:Business_ID', requireLogin, async (req, res) => {
       errorMessage: null
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching business/reviews:", err);
     res.status(500).render('business_review', {
       accountType,
       accountInfo,
