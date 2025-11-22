@@ -44,16 +44,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const knex = require("knex")({
    client: "pg",
    connection: {
-     host: process.env.DB_HOST,        // ✅ Matches
-     user: process.env.DB_USER,        // ✅ Matches
-     password: process.env.DB_PASSWORD, // ✅ Matches
-     database: process.env.DB_NAME,    // ✅ Matches
-     port: process.env.DB_PORT,         // ✅ Matches
-     ssl: {
-      rejectUnauthorized: false       // important for AWS RDS Postgres
-    },
-  pool: { min: 0, max: 10 }    
-  }
+     host: process.env.DB_HOST,        
+     user: process.env.DB_USER,        
+     password: process.env.DB_PASSWORD, 
+     database: process.env.DB_NAME,    
+     port: Number(process.env.DB_PORT),         
+     ssl: process.env.DB_SSL ? {rejectUnauthorized: false} : false 
+    }
 });
 ////////////////// TEST DB CONNECTION //////////////////
 
