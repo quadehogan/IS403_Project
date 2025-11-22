@@ -1,54 +1,50 @@
-<%- include('layout', { title: 'Services' }) %>
+<%- include('layout', {
+  title: 'Services',
+  body: `
+  <div class="col-md-8 mx-auto mt-4">
+    <h2 class="text-center mb-4">Services</h2>
 
-<div class="col-md-8 mx-auto mt-4">
-  <h2 class="text-center mb-4">Services</h2>
+    ${errorMessage ? `<div class="alert alert-danger">${errorMessage}</div>` : ''}
 
-  <!-- Error message -->
-  <% if (errorMessage) { %>
-    <div class="alert alert-danger"><%= errorMessage %></div>
-  <% } %>
+    <table class="table table-striped table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>Service ID</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Price</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${
+          services.length === 0
+            ? '<tr><td colspan="5" class="text-center">No services available</td></tr>'
+            : services.map(service => {
+                const actions =
+                  accountType === 'business' && accountInfo.Business_ID === service.Business_ID
+                    ? `<a href="/edit_service/${service.Service_ID}" class="btn btn-sm btn-primary me-1">Edit</a>
+                       <a href="/delete_service/${service.Service_ID}" class="btn btn-sm btn-danger">Delete</a>`
+                    : '';
+                return `
+                  <tr>
+                    <td>${service.Service_ID}</td>
+                    <td>${service.S_Title}</td>
+                    <td>${service.S_Description}</td>
+                    <td>$${Number(service.S_Price).toFixed(2)}</td>
+                    <td>${actions}</td>
+                  </tr>
+                `;
+              }).join('')
+        }
+      </tbody>
+    </table>
 
-  <!-- Services table -->
-  <table class="table table-striped table-bordered">
-    <thead class="table-dark">
-      <tr>
-        <th>Service ID</th>
-        <th>Title</th>
-        <th>Description</th>
-        <th>Price</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-    <% if (services.length === 0) { %>
-      <tr>
-        <td colspan="5" class="text-center">No services available</td>
-      </tr>
-    <% } else { %>
-    <% services.forEach(service => { %>
-      <tr>
-        <td><%= service.Service_ID %></td>
-        <td><%= service.S_Title %></td>
-        <td><%= service.S_Description %></td>
-        <td>$<%= Number(service.S_Price).toFixed(2) %></td>
-        <td>
-          <% if (accountType === 'business' && accountInfo.Business_ID === service.Business_ID) { %>
-            <a href="/edit_service/<%= service.Service_ID %>" class="btn btn-sm btn-primary me-1">Edit</a>
-            <a href="/delete_service/<%= service.Service_ID %>" class="btn btn-sm btn-danger">Delete</a>
-          <% } %>
-        </td>
-      </tr>
-      <% }) %>
-      <% } %>
-    </tbody>
-  </table>
-
-  <!-- Add Service button -->
-  <% if (accountType === 'business') { %>
-    <div class="text-center mt-3">
-      <a href="/business-submit-service" class="btn btn-success">Add Service</a>
-    </div>
-  <% } %>
-</div>
-
-
+    ${
+      accountType === 'business'
+        ? '<div class="text-center mt-3"><a href="/business-submit-service" class="btn btn-success">Add Service</a></div>'
+        : ''
+    }
+  </div>
+  `
+}) %>
