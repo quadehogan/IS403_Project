@@ -31,6 +31,8 @@ app.use(
     })
 );
 
+console.log("SESSION SECRET:", process.env.SESSION_SECRET);
+
 // Serve static files (CSS, JS, images) from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
 
