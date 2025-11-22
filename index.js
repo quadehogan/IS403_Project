@@ -215,7 +215,7 @@ app.post('/signup-submit-business', (req, res) => {
 ////////////////// DISPLAY BUSINESSES //////////////////
 app.get('/businesses', requireLogin, async(req, res) => {
     try {
-        const businesses = await knex('businesses').select('*');
+        const businesses = await knex('Businesses').select('*');
         res.render('businesses', { businesses, error_message: null });
     } catch (err) {
         console.error('Error loading businesses:', err);
@@ -330,28 +330,37 @@ app.post('/delete_review/:Review_ID', requireLogin, async (req, res) => {
 });
 
 ////////////////// DISPLAY SERVICES //////////////////
-app.get('/services', requireLogin, (req, res) => {
+app.get('/services', requireLogin, async (req, res) => {
   let accountType = null;
   let accountInfo = null;
 
   if (req.session.user) {
     accountType = 'user';
-    accountInfo = req.session.user; // contains username, userid
+    accountInfo = req.session.user; // username, userid
   } else if (req.session.business_user) {
-      accountType = 'business';
-      accountInfo = req.session.business_user; // contains B_Username, Business_ID
+    accountType = 'business';
+    accountInfo = req.session.business_user; // B_Username, Business_ID
   } else {
-      // Just in case, redirect to login if nothing is found
-      return res.redirect('/');
+    // Redirect to login if no session
+    return res.redirect('/');
   }
 
-  // Render the services page and pass account info
-  res.render('services', { 
-    accountType, 
-    accountInfo, 
-    errorMessage: null 
-  });
+  try {
+    // Fetch all services from the database
+    const services = await knex('Services').select('*');
+
+    res.render('services', { 
+      accountType, 
+      accountInfo, 
+      services,      // pass the array of services to the template
+      errorMessage: null 
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error while fetching services");
+  }
 });
+
 
 ////////////////// ADD SERVICES //////////////////
 app.get('/business-submit-service', requireLogin, (req, res) => {

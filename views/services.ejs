@@ -1,58 +1,48 @@
-<%
-  const errHtml = errorMessage
-    ? `<div class="alert alert-danger">${errorMessage}</div>`
-    : '';
+<%- include('layout', { title: 'Services' }) %>
 
-  const tableRows = services.map(service => {
-    let actionButtons = '';
+<div class="col-md-8 mx-auto mt-4">
+  <h2 class="text-center mb-4">Services</h2>
 
-    // Only show Edit/Delete if logged-in business owns the service
-    if (accountType === 'business' && accountInfo.Business_ID === service.Business_ID) {
-      actionButtons = `
-        <a href="/edit_service/${service.Service_ID}" class="btn btn-sm btn-primary me-1">Edit</a>
-        <a href="/delete_service/${service.Service_ID}" class="btn btn-sm btn-danger">Delete</a>
-      `;
-    }
+  <!-- Error message -->
+  <% if (errorMessage) { %>
+    <div class="alert alert-danger"><%= errorMessage %></div>
+  <% } %>
 
-    return `
+  <!-- Services table -->
+  <table class="table table-striped table-bordered">
+    <thead class="table-dark">
       <tr>
-        <td>${service.Service_ID}</td>
-        <td>${service.S_Title}</td>
-        <td>${service.S_Description}</td>
-        <td>$${service.S_Price.toFixed(2)}</td>
-        <td>${actionButtons}</td>
+        <th>Service ID</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Actions</th>
       </tr>
-    `;
-  }).join('');
+    </thead>
+    <tbody>
+      <% services.forEach(service => { %>
+        <tr>
+          <td><%= service.Service_ID %></td>
+          <td><%= service.S_Title %></td>
+          <td><%= service.S_Description %></td>
+          <td>$<%= Number(service.S_Price).toFixed(2) %></td>
+          <td>
+            <% if (accountType === 'business' && accountInfo.Business_ID === service.Business_ID) { %>
+              <a href="/edit_service/<%= service.Service_ID %>" class="btn btn-sm btn-primary me-1">Edit</a>
+              <a href="/delete_service/<%= service.Service_ID %>" class="btn btn-sm btn-danger">Delete</a>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
 
-  const body = `
-    <div class="col-md-8 mx-auto mt-4">
-      <h2 class="text-center mb-4">Services</h2>
-      ${errHtml}
-      <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-          <tr>
-            <th>Service ID</th>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${tableRows}
-        </tbody>
-      </table>
-
-      <!-- Add Service Button -->
-      <% if (accountType === 'business') { %>
-        <form action="/business-submit-service" method="POST" class="text-center mt-3">
-          <button type="submit" class="btn btn-success">Add Service</button>
-        </form>
-      <% } %>
+  <!-- Add Service button -->
+  <% if (accountType === 'business') { %>
+    <div class="text-center mt-3">
+      <a href="/business-submit-service" class="btn btn-success">Add Service</a>
     </div>
-  `;
-%>
+  <% } %>
+</div>
 
-<%- include('layout', { title: 'Services', body }) %>
 
