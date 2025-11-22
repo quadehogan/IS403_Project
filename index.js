@@ -196,12 +196,35 @@ app.post('/signup-submit-user', (req, res) => {
 
 ////////////////// SIGNUP-POST BUSINESS //////////////////
 app.post('/signup-submit-business', (req, res) => {
-    const { B_Name, B_Email, B_Password, B_Category, B_Description, B_Phone, B_Address, B_Username, Owner } = req.body;
+    const {
+        B_Name,
+        B_Email,
+        B_Password,
+        B_Category,
+        B_Description,
+        B_Phone,
+        B_Address,
+        B_Username,
+        Owner
+    } = req.body;
+
+    // Validate required fields
     if (!B_Name || !B_Password || !B_Email || !B_Username || !B_Category || !Owner || !B_Description || !B_Phone || !B_Address) {
         return res.status(400).render("business_signup", { error_message: "All fields are required for business signup." });
     }
 
-    const newBusiness = { B_Name, B_Email, B_Password, B_Category, B_Description, B_Phone, B_Address, B_Username, Owner };
+    // Match column names exactly
+    const newBusiness = {
+        B_Name,
+        B_Email,
+        B_Password,
+        B_Category,
+        B_Description,
+        B_Phone,
+        B_Address,
+        B_Username,
+        Owner
+    };
 
     knex("Business")
         .insert(newBusiness)
